@@ -26,7 +26,7 @@ jobs:
     # Step 3: Restore dependencies for the project or solution
     - name: Restore dependencies
       run: |
-        if [[ "$RUNNER_OS" == "Windows" ]]; then
+        if ($Env:RUNNER_OS -eq "Windows") {
           # PowerShell syntax for Windows
           if (Test-Path "MySolution.sln") {
             Write-Host "Restoring solution MySolution.sln"
@@ -38,7 +38,8 @@ jobs:
             Write-Host "No .sln or .csproj file found in the directory."
             exit 1
           }
-        else
+        }
+        else {
           # Bash syntax for Linux/macOS
           if [ -f "MySolution.sln" ]; then
             echo "Restoring solution MySolution.sln"
@@ -50,7 +51,7 @@ jobs:
             echo "No .sln or .csproj file found in the directory."
             exit 1
           fi
-        fi
+        }
 
     # Display the .NET version
     - name: Display .NET version
@@ -59,7 +60,7 @@ jobs:
     # Step 4: Build the project or solution
     - name: Build project
       run: |
-        if [[ "$RUNNER_OS" == "Windows" ]]; then
+        if ($Env:RUNNER_OS -eq "Windows") {
           # PowerShell syntax for Windows
           if (Test-Path "MySolution.sln") {
             Write-Host "Building solution MySolution.sln"
@@ -71,7 +72,8 @@ jobs:
             Write-Host "No .sln or .csproj file found in the directory."
             exit 1
           }
-        else
+        }
+        else {
           # Bash syntax for Linux/macOS
           if [ -f "MySolution.sln" ]; then
             echo "Building solution MySolution.sln"
@@ -83,12 +85,12 @@ jobs:
             echo "No .sln or .csproj file found in the directory."
             exit 1
           fi
-        fi
+        }
 
     # Step 5: Run tests
     - name: Run unit tests
       run: |
-        if [[ "$RUNNER_OS" == "Windows" ]]; then
+        if ($Env:RUNNER_OS -eq "Windows") {
           # PowerShell syntax for Windows
           if (Test-Path "MySolution.sln") {
             Write-Host "Running tests for solution MySolution.sln"
@@ -100,7 +102,8 @@ jobs:
             Write-Host "No .sln or .csproj file found in the directory."
             exit 1
           }
-        else
+        }
+        else {
           # Bash syntax for Linux/macOS
           if [ -f "MySolution.sln" ]; then
             echo "Running tests for solution MySolution.sln"
@@ -112,4 +115,4 @@ jobs:
             echo "No .sln or .csproj file found in the directory."
             exit 1
           fi
-        fi
+        }
