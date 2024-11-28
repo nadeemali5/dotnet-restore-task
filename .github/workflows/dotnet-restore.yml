@@ -1,0 +1,31 @@
+name: .NET Restore
+
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  restore:
+    runs-on: windows-latest
+
+    steps:
+    
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    
+    - name: Set up .NET SDK
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '7.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Display .NET version
+      run: dotnet --version
