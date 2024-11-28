@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # You can use windows-latest or macos-latest if you need those environments
+    runs-on: windows-latest  # Windows runner
 
     steps:
       - name: Checkout repository
@@ -19,13 +19,16 @@ jobs:
       - name: Set up .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '6.0'  # You can change the version as per your needs
+          dotnet-version: '6.0'  # Specify the version of .NET SDK to use
+
+      - name: List directory contents
+        run: dir  # Lists files in the current directory to ensure we're in the right place
 
       - name: Restore dependencies
-        run: dotnet restore MyDotnetApp.sln
+        run: dotnet restore MyDotnetApp.sln  # Ensure this path is correct
 
       - name: Build the project
-        run: dotnet build MyDotnetApp.sln --configuration Release
+        run: dotnet build MyDotnetApp.sln --configuration Release  # Build the solution
 
       - name: Run the application
-        run: dotnet run --project MyDotnetApp/MyDotnetApp.csproj
+        run: dotnet run --project MyDotnetApp\MyDotnetApp.csproj  # Run the application from the .csproj file
