@@ -1,5 +1,4 @@
-name: .NET Restore
-
+name: .NET Restore and Build
 
 on:
   push:
@@ -10,22 +9,50 @@ on:
       - main
 
 jobs:
-  restore:
+  restore-and-build:
     runs-on: windows-latest
 
     steps:
-    
+    # Step 1: Checkout the code from the repository
     - name: Checkout code
       uses: actions/checkout@v2
 
-    
+    # Step 2: Set up .NET SDK
     - name: Set up .NET SDK
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: '7.x'
 
+    # Step 3: Restore dependencies for the project or solution
     - name: Restore dependencies
-      run: dotnet restore
+      run: |
+        # Check if the solution file exists (recommended for multi-project repos)
+        if [ -f MySolution.sln ]; then
+          echo "Restoring solution MySolution.sln"
+          dotnet restore MySolution.sln
+        else
+          echo "Restoring single project MyProject.csproj"
+          dotnet restore MyProject.csproj
+        fi
 
+    # Display the .NET version
     - name: Display .NET version
       run: dotnet --version
+
+    # Step 4: Build the project or solution
+    - name: Build project
+      run: |
+        if [ -f MySolution.sln ]; then
+          dotnet build MySolution.sln
+        else
+          dotnet build MyProject.csproj
+        fi
+
+    # Step 5: Run tests (optional, but recommended if you have tests)
+    - name: Run unit tests
+      run: |
+        if [ -f MySolution.sln ]; then
+          dotnet test MySolution.sln
+        else
+          dotnet test MyProject.csproj
+        fi
