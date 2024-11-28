@@ -10,7 +10,7 @@ on:
 
 jobs:
   restore-and-build:
-    runs-on: windows-latest
+    runs-on: windows-latest  # You can also use ubuntu-latest or macos-latest
 
     steps:
     # Step 1: Checkout the code from the repository
@@ -26,15 +26,30 @@ jobs:
     # Step 3: Restore dependencies for the project or solution
     - name: Restore dependencies
       run: |
-        if [ -f MySolution.sln ]; then
-          echo "Restoring solution MySolution.sln"
-          dotnet restore MySolution.sln
-        elif [ -f MyProject.csproj ]; then
-          echo "Restoring project MyProject.csproj"
-          dotnet restore MyProject.csproj
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          # PowerShell syntax for Windows
+          if (Test-Path "MySolution.sln") {
+            Write-Host "Restoring solution MySolution.sln"
+            dotnet restore MySolution.sln
+          } elseif (Test-Path "MyProject.csproj") {
+            Write-Host "Restoring project MyProject.csproj"
+            dotnet restore MyProject.csproj
+          } else {
+            Write-Host "No .sln or .csproj file found in the directory."
+            exit 1
+          }
         else
-          echo "No .sln or .csproj file found in the directory."
-          exit 1
+          # Bash syntax for Linux/macOS
+          if [ -f "MySolution.sln" ]; then
+            echo "Restoring solution MySolution.sln"
+            dotnet restore MySolution.sln
+          elif [ -f "MyProject.csproj" ]; then
+            echo "Restoring project MyProject.csproj"
+            dotnet restore MyProject.csproj
+          else
+            echo "No .sln or .csproj file found in the directory."
+            exit 1
+          fi
         fi
 
     # Display the .NET version
@@ -44,23 +59,57 @@ jobs:
     # Step 4: Build the project or solution
     - name: Build project
       run: |
-        if [ -f MySolution.sln ]; then
-          dotnet build MySolution.sln
-        elif [ -f MyProject.csproj ]; then
-          dotnet build MyProject.csproj
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          # PowerShell syntax for Windows
+          if (Test-Path "MySolution.sln") {
+            Write-Host "Building solution MySolution.sln"
+            dotnet build MySolution.sln
+          } elseif (Test-Path "MyProject.csproj") {
+            Write-Host "Building project MyProject.csproj"
+            dotnet build MyProject.csproj
+          } else {
+            Write-Host "No .sln or .csproj file found in the directory."
+            exit 1
+          }
         else
-          echo "No .sln or .csproj file found in the directory."
-          exit 1
+          # Bash syntax for Linux/macOS
+          if [ -f "MySolution.sln" ]; then
+            echo "Building solution MySolution.sln"
+            dotnet build MySolution.sln
+          elif [ -f "MyProject.csproj" ]; then
+            echo "Building project MyProject.csproj"
+            dotnet build MyProject.csproj
+          else
+            echo "No .sln or .csproj file found in the directory."
+            exit 1
+          fi
         fi
 
     # Step 5: Run tests
     - name: Run unit tests
       run: |
-        if [ -f MySolution.sln ]; then
-          dotnet test MySolution.sln
-        elif [ -f MyProject.csproj ]; then
-          dotnet test MyProject.csproj
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          # PowerShell syntax for Windows
+          if (Test-Path "MySolution.sln") {
+            Write-Host "Running tests for solution MySolution.sln"
+            dotnet test MySolution.sln
+          } elseif (Test-Path "MyProject.csproj") {
+            Write-Host "Running tests for project MyProject.csproj"
+            dotnet test MyProject.csproj
+          } else {
+            Write-Host "No .sln or .csproj file found in the directory."
+            exit 1
+          }
         else
-          echo "No .sln or .csproj file found in the directory."
-          exit 1
+          # Bash syntax for Linux/macOS
+          if [ -f "MySolution.sln" ]; then
+            echo "Running tests for solution MySolution.sln"
+            dotnet test MySolution.sln
+          elif [ -f "MyProject.csproj" ]; then
+            echo "Running tests for project MyProject.csproj"
+            dotnet test MyProject.csproj
+          else
+            echo "No .sln or .csproj file found in the directory."
+            exit 1
+          fi
         fi
