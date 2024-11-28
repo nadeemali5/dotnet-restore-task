@@ -26,15 +26,19 @@ jobs:
     # Step 3: Restore dependencies for the project or solution
     - name: Restore dependencies
       run: |
-        if ($Env:RUNNER_OS -eq "Windows") {
+        if ($Env:RUNNER_OS -eq "Windows") 
+        {
           # PowerShell syntax for Windows
-          if (Test-Path "MySolution.sln") {
+          if (Test-Path "MySolution.sln") 
+          {
             Write-Host "Restoring solution MySolution.sln"
             dotnet restore MySolution.sln
-          } elseif (Test-Path "MyProject.csproj") {
+          } elseif (Test-Path "MyProject.csproj") 
+          {
             Write-Host "Restoring project MyProject.csproj"
             dotnet restore MyProject.csproj
-          } else {
+          } else 
+          {
             Write-Host "No .sln or .csproj file found in the directory."
             exit 1
           }
