@@ -26,13 +26,15 @@ jobs:
     # Step 3: Restore dependencies for the project or solution
     - name: Restore dependencies
       run: |
-        # Check if the solution file exists (recommended for multi-project repos)
         if [ -f MySolution.sln ]; then
           echo "Restoring solution MySolution.sln"
           dotnet restore MySolution.sln
-        else
-          echo "Restoring single project MyProject.csproj"
+        elif [ -f MyProject.csproj ]; then
+          echo "Restoring project MyProject.csproj"
           dotnet restore MyProject.csproj
+        else
+          echo "No .sln or .csproj file found in the directory."
+          exit 1
         fi
 
     # Display the .NET version
@@ -44,15 +46,21 @@ jobs:
       run: |
         if [ -f MySolution.sln ]; then
           dotnet build MySolution.sln
-        else
+        elif [ -f MyProject.csproj ]; then
           dotnet build MyProject.csproj
+        else
+          echo "No .sln or .csproj file found in the directory."
+          exit 1
         fi
 
-    # Step 5: Run tests (optional, but recommended if you have tests)
+    # Step 5: Run tests
     - name: Run unit tests
       run: |
         if [ -f MySolution.sln ]; then
           dotnet test MySolution.sln
-        else
+        elif [ -f MyProject.csproj ]; then
           dotnet test MyProject.csproj
+        else
+          echo "No .sln or .csproj file found in the directory."
+          exit 1
         fi
