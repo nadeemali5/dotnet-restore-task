@@ -1,0 +1,31 @@
+name: .NET CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # You can use windows-latest or macos-latest if you need those environments
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0'  # You can change the version as per your needs
+
+      - name: Restore dependencies
+        run: dotnet restore MyDotnetApp.sln
+
+      - name: Build the project
+        run: dotnet build MyDotnetApp.sln --configuration Release
+
+      - name: Run the application
+        run: dotnet run --project MyDotnetApp/MyDotnetApp.csproj
