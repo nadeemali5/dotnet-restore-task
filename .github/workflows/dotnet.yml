@@ -24,28 +24,28 @@ jobs:
       - name: List directory contents
         run: dir
 
-      - name: Install jq (to parse JSON)
-        run: choco install jq
-
-      - name: Read configuration from JSON file
+      - name: Read configuration from JSON file (PowerShell)
         id: read_config
+        shell: pwsh
         run: |
-          # Read the JSON config file and extract parameters
-          PUBLISH_WEB_PROJECTS=$(jq -r '.publishWebProjects' dotnet-config.json)
-          PROJECTS=$(jq -r '.projects' dotnet-config.json)
-          CUSTOM=$(jq -r '.custom' dotnet-config.json)
-          ARGUMENTS=$(jq -r '.arguments' dotnet-config.json)
-          PUBLISH_TEST_RESULTS=$(jq -r '.publishTestResults' dotnet-config.json)
+          # Read the JSON config file
+          $config = Get-Content -Raw -Path "dotnet-config.json" | ConvertFrom-Json
 
-          # Set the values as environment variables
-          echo "PUBLISH_WEB_PROJECTS=$PUBLISH_WEB_PROJECTS" >> $GITHUB_ENV
-          echo "PROJECTS=$PROJECTS" >> $GITHUB_ENV
-          echo "CUSTOM=$CUSTOM" >> $GITHUB_ENV
-          echo "ARGUMENTS=$ARGUMENTS" >> $GITHUB_ENV
-          echo "PUBLISH_TEST_RESULTS=$PUBLISH_TEST_RESULTS" >> $GITHUB_ENV
+          # Extract values from the JSON config
+          $env:PUBLISH_WEB_PROJECTS = $config.publishWebProjects
+          $env:PROJECTS = $config.projects
+          $env:CUSTOM = $config.custom
+          $env:ARGUMENTS = $config.arguments
+          $env:PUBLISH_TEST_RESULTS = $config.publishTestResults
 
       - name: Restore dependencies
-        run: dotnet restore MyDotnetApp.sln --publishWebProjects $PUBLISH_WEB_PROJECTS --projects $PROJECTS --custom $CUSTOM --arguments $ARGUMENTS --publishTestResults $PUBLISH_TEST_RESULTS
+        run: |
+          dotnet restore MyDotnetApp.sln `
+            --publishWebProjects $env:PUBLISH_WEB_PROJECTS `
+            --projects $env:PROJECTS `
+            --custom $env:CUSTOM `
+            --arguments $env:ARGUMENTS `
+            --publishTestResults $env:PUBLISH_TEST_RESULTS
 
       - name: Build the project
         run: dotnet build MyDotnetApp.sln --configuration Release
