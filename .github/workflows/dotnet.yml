@@ -31,42 +31,42 @@ jobs:
           # Read the JSON config file
           $config = Get-Content -Raw -Path "dotnet-config.json" | ConvertFrom-Json
 
-          # Extract values from the JSON config and set them as GitHub Actions outputs
-          echo "::set-output name=CUSTOM::$($config.custom)"
-          echo "::set-output name=ARGUMENTS::$($config.arguments)"
-          echo "::set-output name=TEST_RUN_TITLE::$($config.testRunTitle)"
-          echo "::set-output name=MODIFY_OUTPUT_PATH::$($config.modifyOutputPath)"
-          echo "::set-output name=SELECT_OR_CONFIG::$($config.selectOrConfig)"
-          echo "::set-output name=FEED_RESTORE::$($config.feedRestore)"
-          echo "::set-output name=INCLUDE_NUGET_ORG::$($config.includeNuGetOrg)"
+          # Set the values as environment variables for the entire job
+          echo "CUSTOM=$($config.custom)" >> $env:GITHUB_ENV
+          echo "ARGUMENTS=$($config.arguments)" >> $env:GITHUB_ENV
+          echo "TEST_RUN_TITLE=$($config.testRunTitle)" >> $env:GITHUB_ENV
+          echo "MODIFY_OUTPUT_PATH=$($config.modifyOutputPath)" >> $env:GITHUB_ENV
+          echo "SELECT_OR_CONFIG=$($config.selectOrConfig)" >> $env:GITHUB_ENV
+          echo "FEED_RESTORE=$($config.feedRestore)" >> $env:GITHUB_ENV
+          echo "INCLUDE_NUGET_ORG=$($config.includeNuGetOrg)" >> $env:GITHUB_ENV
 
       - name: Print environment variables
         run: |
-          echo "CUSTOM = ${{ steps.read_config.outputs.CUSTOM }}"
-          echo "ARGUMENTS = ${{ steps.read_config.outputs.ARGUMENTS }}"
-          echo "TEST_RUN_TITLE = ${{ steps.read_config.outputs.TEST_RUN_TITLE }}"
-          echo "MODIFY_OUTPUT_PATH = ${{ steps.read_config.outputs.MODIFY_OUTPUT_PATH }}"
-          echo "SELECT_OR_CONFIG = ${{ steps.read_config.outputs.SELECT_OR_CONFIG }}"
-          echo "FEED_RESTORE = ${{ steps.read_config.outputs.FEED_RESTORE }}"
-          echo "INCLUDE_NUGET_ORG = ${{ steps.read_config.outputs.INCLUDE_NUGET_ORG }}"
+          echo "CUSTOM = $CUSTOM"
+          echo "ARGUMENTS = $ARGUMENTS"
+          echo "TEST_RUN_TITLE = $TEST_RUN_TITLE"
+          echo "MODIFY_OUTPUT_PATH = $MODIFY_OUTPUT_PATH"
+          echo "SELECT_OR_CONFIG = $SELECT_OR_CONFIG"
+          echo "FEED_RESTORE = $FEED_RESTORE"
+          echo "INCLUDE_NUGET_ORG = $INCLUDE_NUGET_ORG"
 
       - name: Build the project
         run: |
           echo "Building the project with the following parameters:"
-          echo "Custom: ${{ steps.read_config.outputs.CUSTOM }}"
-          echo "Arguments: ${{ steps.read_config.outputs.ARGUMENTS }}"
-          echo "ModifyOutputPath: ${{ steps.read_config.outputs.MODIFY_OUTPUT_PATH }}"
-          echo "SelectOrConfig: ${{ steps.read_config.outputs.SELECT_OR_CONFIG }}"
-          echo "FeedRestore: ${{ steps.read_config.outputs.FEED_RESTORE }}"
-          echo "IncludeNuGetOrg: ${{ steps.read_config.outputs.INCLUDE_NUGET_ORG }}"
+          echo "Custom: $CUSTOM"
+          echo "Arguments: $ARGUMENTS"
+          echo "ModifyOutputPath: $MODIFY_OUTPUT_PATH"
+          echo "SelectOrConfig: $SELECT_OR_CONFIG"
+          echo "FeedRestore: $FEED_RESTORE"
+          echo "IncludeNuGetOrg: $INCLUDE_NUGET_ORG"
 
           dotnet build MyDotnetApp.sln --configuration Release `
-            -p:Custom="${{ steps.read_config.outputs.CUSTOM }}" `
-            -p:Arguments="${{ steps.read_config.outputs.ARGUMENTS }}" `
-            -p:ModifyOutputPath="${{ steps.read_config.outputs.MODIFY_OUTPUT_PATH }}" `
-            -p:SelectOrConfig="${{ steps.read_config.outputs.SELECT_OR_CONFIG }}" `
-            -p:FeedRestore="${{ steps.read_config.outputs.FEED_RESTORE }}" `
-            -p:IncludeNuGetOrg="${{ steps.read_config.outputs.INCLUDE_NUGET_ORG }}"
+            -p:Custom="$CUSTOM" `
+            -p:Arguments="$ARGUMENTS" `
+            -p:ModifyOutputPath="$MODIFY_OUTPUT_PATH" `
+            -p:SelectOrConfig="$SELECT_OR_CONFIG" `
+            -p:FeedRestore="$FEED_RESTORE" `
+            -p:IncludeNuGetOrg="$INCLUDE_NUGET_ORG"
 
       - name: Run the application
         run: dotnet run --project MyDotnetApp\MyDotnetApp.csproj
