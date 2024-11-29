@@ -1,4 +1,4 @@
-name: .NET CI/CD.
+name: .NET CI/CD
 
 on:
   push:
@@ -32,13 +32,9 @@ jobs:
           $config = Get-Content -Raw -Path "dotnet-config.json" | ConvertFrom-Json
 
           # Extract values from the JSON config and set them as environment variables
-          $env:PUBLISH_WEB_PROJECTS = $config.publishWebProjects
-          $env:PROJECTS = $config.projects
           $env:CUSTOM = $config.custom
           $env:ARGUMENTS = $config.arguments
-          $env:PUBLISH_TEST_RESULTS = $config.publishTestResults
           $env:TEST_RUN_TITLE = $config.testRunTitle
-          $env:ZIP_AFTER_PUBLISH = $config.zipAfterPublish
           $env:MODIFY_OUTPUT_PATH = $config.modifyOutputPath
           $env:SELECT_OR_CONFIG = $config.selectOrConfig
           $env:FEED_RESTORE = $config.feedRestore
@@ -51,17 +47,17 @@ jobs:
       - name: Build the project
         run: |
           dotnet build MyDotnetApp.sln --configuration Release `
-            --projects $env:PROJECTS `
             --custom $env:CUSTOM `
-            --arguments $env:ARGUMENTS
+            --arguments $env:ARGUMENTS `
+            --modifyOutputPath $env:MODIFY_OUTPUT_PATH `
+            --selectOrConfig $env:SELECT_OR_CONFIG `
+            --feedRestore $env:FEED_RESTORE `
+            --includeNuGetOrg $env:INCLUDE_NUGET_ORG
 
       - name: Publish the project
         run: |
           dotnet publish MyDotnetApp.sln --configuration Release `
-            --publishWebProjects $env:PUBLISH_WEB_PROJECTS `
-            --publishTestResults $env:PUBLISH_TEST_RESULTS `
             --testRunTitle $env:TEST_RUN_TITLE `
-            --zipAfterPublish $env:ZIP_AFTER_PUBLISH `
             --modifyOutputPath $env:MODIFY_OUTPUT_PATH `
             --selectOrConfig $env:SELECT_OR_CONFIG `
             --feedRestore $env:FEED_RESTORE `
