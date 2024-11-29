@@ -31,24 +31,41 @@ jobs:
           # Read the JSON config file
           $config = Get-Content -Raw -Path "dotnet-config.json" | ConvertFrom-Json
 
-          # Extract values from the JSON config
+          # Extract values from the JSON config and set them as environment variables
           $env:PUBLISH_WEB_PROJECTS = $config.publishWebProjects
           $env:PROJECTS = $config.projects
           $env:CUSTOM = $config.custom
           $env:ARGUMENTS = $config.arguments
           $env:PUBLISH_TEST_RESULTS = $config.publishTestResults
+          $env:TEST_RUN_TITLE = $config.testRunTitle
+          $env:ZIP_AFTER_PUBLISH = $config.zipAfterPublish
+          $env:MODIFY_OUTPUT_PATH = $config.modifyOutputPath
+          $env:SELECT_OR_CONFIG = $config.selectOrConfig
+          $env:FEED_RESTORE = $config.feedRestore
+          $env:INCLUDE_NUGET_ORG = $config.includeNuGetOrg
 
       - name: Restore dependencies
         run: |
-          dotnet restore MyDotnetApp.sln `
-            --publishWebProjects $env:PUBLISH_WEB_PROJECTS `
+          dotnet restore MyDotnetApp.sln
+          
+      - name: Build the project
+        run: |
+          dotnet build MyDotnetApp.sln --configuration Release `
             --projects $env:PROJECTS `
             --custom $env:CUSTOM `
-            --arguments $env:ARGUMENTS `
-            --publishTestResults $env:PUBLISH_TEST_RESULTS
+            --arguments $env:ARGUMENTS
 
-      - name: Build the project
-        run: dotnet build MyDotnetApp.sln --configuration Release
+      - name: Publish the project
+        run: |
+          dotnet publish MyDotnetApp.sln --configuration Release `
+            --publishWebProjects $env:PUBLISH_WEB_PROJECTS `
+            --publishTestResults $env:PUBLISH_TEST_RESULTS `
+            --testRunTitle $env:TEST_RUN_TITLE `
+            --zipAfterPublish $env:ZIP_AFTER_PUBLISH `
+            --modifyOutputPath $env:MODIFY_OUTPUT_PATH `
+            --selectOrConfig $env:SELECT_OR_CONFIG `
+            --feedRestore $env:FEED_RESTORE `
+            --includeNuGetOrg $env:INCLUDE_NUGET_ORG
 
       - name: Run the application
         run: dotnet run --project MyDotnetApp\MyDotnetApp.csproj
