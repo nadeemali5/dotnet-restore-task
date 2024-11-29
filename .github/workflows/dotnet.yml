@@ -22,7 +22,7 @@ jobs:
           dotnet-version: '6.0'
 
       - name: List directory contents
-        run: dir
+        run: dir  # This helps you verify the directory structure
 
       - name: Read configuration from JSON file (PowerShell)
         id: read_config
@@ -40,18 +40,26 @@ jobs:
           $env:FEED_RESTORE = $config.feedRestore
           $env:INCLUDE_NUGET_ORG = $config.includeNuGetOrg
 
-      - name: Restore dependencies
+      - name: Print environment variables
         run: |
-          dotnet restore MyDotnetApp.sln `
-            -p:Custom=$env:CUSTOM `
-            -p:Arguments=$env:ARGUMENTS `
-            -p:ModifyOutputPath=$env:MODIFY_OUTPUT_PATH `
-            -p:SelectOrConfig=$env:SELECT_OR_CONFIG `
-            -p:FeedRestore=$env:FEED_RESTORE `
-            -p:IncludeNuGetOrg=$env:INCLUDE_NUGET_ORG
+          echo "CUSTOM = $env:CUSTOM"
+          echo "ARGUMENTS = $env:ARGUMENTS"
+          echo "TEST_RUN_TITLE = $env:TEST_RUN_TITLE"
+          echo "MODIFY_OUTPUT_PATH = $env:MODIFY_OUTPUT_PATH"
+          echo "SELECT_OR_CONFIG = $env:SELECT_OR_CONFIG"
+          echo "FEED_RESTORE = $env:FEED_RESTORE"
+          echo "INCLUDE_NUGET_ORG = $env:INCLUDE_NUGET_ORG"
 
       - name: Build the project
         run: |
+          echo "Building the project with the following parameters:"
+          echo "Custom: $env:CUSTOM"
+          echo "Arguments: $env:ARGUMENTS"
+          echo "ModifyOutputPath: $env:MODIFY_OUTPUT_PATH"
+          echo "SelectOrConfig: $env:SELECT_OR_CONFIG"
+          echo "FeedRestore: $env:FEED_RESTORE"
+          echo "IncludeNuGetOrg: $env:INCLUDE_NUGET_ORG"
+          
           dotnet build MyDotnetApp.sln --configuration Release `
             -p:Custom=$env:CUSTOM `
             -p:Arguments=$env:ARGUMENTS `
@@ -59,15 +67,6 @@ jobs:
             -p:SelectOrConfig=$env:SELECT_OR_CONFIG `
             -p:FeedRestore=$env:FEED_RESTORE `
             -p:IncludeNuGetOrg=$env:INCLUDE_NUGET_ORG
-
-      - name: Publish the project
-        run: |
-          dotnet publish MyDotnetApp.sln --configuration Release `
-            -p:TestRunTitle=$env:TEST_RUN_TITLE `
-            -p:ModifyOutputPath=$env:MODIFY_OUTPUT_PATH `
-            -p:SelectOrConfig=$env:SELECT_OR_CONFIG `
-            -p:FeedRestore=$env:FEED_RESTORE `
-            -p:IncludeNuGetOrg=$env:INCLUDE_NUGET_ORG
-
+          
       - name: Run the application
         run: dotnet run --project MyDotnetApp\MyDotnetApp.csproj
