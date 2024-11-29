@@ -25,7 +25,7 @@ jobs:
         run: dir
 
       - name: Restore dependencies
-        run: dotnet restore MyDotnetApp.sln
+        run: dotnet restore MyDotnetApp.sln --publishWebProjects true --projects "**/*.csproj" --custom "" --arguments "" --publishTestResults true
 
       - name: Build the project
         run: dotnet build MyDotnetApp.sln --configuration Release
