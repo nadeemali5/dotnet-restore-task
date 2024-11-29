@@ -24,8 +24,28 @@ jobs:
       - name: List directory contents
         run: dir
 
+      - name: Install jq (to parse JSON)
+        run: choco install jq
+
+      - name: Read configuration from JSON file
+        id: read_config
+        run: |
+          # Read the JSON config file and extract parameters
+          PUBLISH_WEB_PROJECTS=$(jq -r '.publishWebProjects' dotnet-config.json)
+          PROJECTS=$(jq -r '.projects' dotnet-config.json)
+          CUSTOM=$(jq -r '.custom' dotnet-config.json)
+          ARGUMENTS=$(jq -r '.arguments' dotnet-config.json)
+          PUBLISH_TEST_RESULTS=$(jq -r '.publishTestResults' dotnet-config.json)
+
+          # Set the values as environment variables
+          echo "PUBLISH_WEB_PROJECTS=$PUBLISH_WEB_PROJECTS" >> $GITHUB_ENV
+          echo "PROJECTS=$PROJECTS" >> $GITHUB_ENV
+          echo "CUSTOM=$CUSTOM" >> $GITHUB_ENV
+          echo "ARGUMENTS=$ARGUMENTS" >> $GITHUB_ENV
+          echo "PUBLISH_TEST_RESULTS=$PUBLISH_TEST_RESULTS" >> $GITHUB_ENV
+
       - name: Restore dependencies
-        run: dotnet restore MyDotnetApp.sln --publishWebProjects true --projects "**/*.csproj" --custom "" --arguments "" --publishTestResults true
+        run: dotnet restore MyDotnetApp.sln --publishWebProjects $PUBLISH_WEB_PROJECTS --projects $PROJECTS --custom $CUSTOM --arguments $ARGUMENTS --publishTestResults $PUBLISH_TEST_RESULTS
 
       - name: Build the project
         run: dotnet build MyDotnetApp.sln --configuration Release
