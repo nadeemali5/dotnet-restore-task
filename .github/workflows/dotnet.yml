@@ -44,24 +44,24 @@ jobs:
         run: |
           dotnet restore MyDotnetApp.sln
           
-      - name: Build the project
-        run: |
-          dotnet build MyDotnetApp.sln --configuration Release `
-            --custom $env:CUSTOM `
-            --arguments $env:ARGUMENTS `
-            --modifyOutputPath $env:MODIFY_OUTPUT_PATH `
-            --selectOrConfig $env:SELECT_OR_CONFIG `
-            --feedRestore $env:FEED_RESTORE `
-            --includeNuGetOrg $env:INCLUDE_NUGET_ORG
+      #- name: Build the project
+      #  run: |
+      #    dotnet build MyDotnetApp.sln --configuration Release `
+      #      --custom $env:CUSTOM `
+      #      --arguments $env:ARGUMENTS `
+      #      --modifyOutputPath $env:MODIFY_OUTPUT_PATH `
+      #      --selectOrConfig $env:SELECT_OR_CONFIG `
+      #      --feedRestore $env:FEED_RESTORE `
+      #      --includeNuGetOrg $env:INCLUDE_NUGET_ORG
 
-      - name: Publish the project
-        run: |
-          dotnet publish MyDotnetApp.sln --configuration Release `
-            --testRunTitle $env:TEST_RUN_TITLE `
-            --modifyOutputPath $env:MODIFY_OUTPUT_PATH `
-            --selectOrConfig $env:SELECT_OR_CONFIG `
-            --feedRestore $env:FEED_RESTORE `
-            --includeNuGetOrg $env:INCLUDE_NUGET_ORG
+      #- name: Publish the project
+       # run: |
+        #  dotnet publish MyDotnetApp.sln --configuration Release `
+         #   --testRunTitle $env:TEST_RUN_TITLE `
+         #  --modifyOutputPath $env:MODIFY_OUTPUT_PATH `
+         #   --selectOrConfig $env:SELECT_OR_CONFIG `
+         #   --feedRestore $env:FEED_RESTORE `
+         #   --includeNuGetOrg $env:INCLUDE_NUGET_ORG
 
       - name: Run the application
         run: dotnet run --project MyDotnetApp\MyDotnetApp.csproj
