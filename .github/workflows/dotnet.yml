@@ -22,7 +22,7 @@ jobs:
           dotnet-version: '6.0'
 
       - name: List directory contents
-        run: dir
+        run: dir  # This helps you verify the directory structure
 
       - name: Read configuration from JSON file (PowerShell)
         id: read_config
@@ -65,7 +65,9 @@ jobs:
       - name: Build the project using arguments file
         run: |
           # Read arguments from args.txt and pass them to dotnet build
-          $args = Get-Content -Path args.txt
+          $args = Get-Content -Path args.txt | ForEach-Object { $_.Trim() }  # Ensure no extra spaces
+          
+          # Use the arguments for dotnet build
           dotnet build MyDotnetApp.sln $args
 
       - name: Run the application
