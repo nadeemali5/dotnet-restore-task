@@ -50,23 +50,23 @@ jobs:
           echo "FEED_RESTORE = ${{ env.FEED_RESTORE }}"
           echo "INCLUDE_NUGET_ORG = ${{ env.INCLUDE_NUGET_ORG }}"
 
-      - name: Build the project
+      - name: Save .NET CLI arguments to a file
         run: |
-          echo "Building the project with the following parameters:"
-          echo "Custom: ${{ env.CUSTOM }}"
-          echo "Arguments: ${{ env.ARGUMENTS }}"
-          echo "ModifyOutputPath: ${{ env.MODIFY_OUTPUT_PATH }}"
-          echo "SelectOrConfig: ${{ env.SELECT_OR_CONFIG }}"
-          echo "FeedRestore: ${{ env.FEED_RESTORE }}"
-          echo "IncludeNuGetOrg: ${{ env.INCLUDE_NUGET_ORG }}"
+          # Create a file to save the arguments
+          echo "--configuration Release" > args.txt
+          echo "-p:Custom=${{ env.CUSTOM }}" >> args.txt
+          echo "-p:Arguments=${{ env.ARGUMENTS }}" >> args.txt
+          echo "-p:ModifyOutputPath=${{ env.MODIFY_OUTPUT_PATH }}" >> args.txt
+          echo "-p:SelectOrConfig=${{ env.SELECT_OR_CONFIG }}" >> args.txt
+          echo "-p:FeedRestore=${{ env.FEED_RESTORE }}" >> args.txt
+          echo "-p:IncludeNuGetOrg=${{ env.INCLUDE_NUGET_ORG }}" >> args.txt
+          cat args.txt  # Optional: print the arguments to verify the content of the file
 
-          dotnet build MyDotnetApp.sln --configuration Release `
-            -p:Custom="${{ env.CUSTOM }}" `
-            -p:Arguments="${{ env.ARGUMENTS }}" `
-            -p:ModifyOutputPath="${{ env.MODIFY_OUTPUT_PATH }}" `
-            -p:SelectOrConfig="${{ env.SELECT_OR_CONFIG }}" `
-            -p:FeedRestore="${{ env.FEED_RESTORE }}" `
-            -p:IncludeNuGetOrg="${{ env.INCLUDE_NUGET_ORG }}"
+      - name: Build the project using arguments file
+        run: |
+          # Build the project using the arguments file
+          echo "Building the project with arguments from args.txt..."
+          dotnet build MyDotnetApp.sln @args.txt
 
       - name: Run the application
         run: dotnet run --project MyDotnetApp\MyDotnetApp.csproj
