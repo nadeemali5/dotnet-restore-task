@@ -22,7 +22,7 @@ jobs:
           dotnet-version: '6.0'
 
       - name: List directory contents
-        run: dir
+        run: dir  # This helps you verify the directory structure
 
       - name: Read configuration from JSON file (PowerShell)
         id: read_config
@@ -52,7 +52,7 @@ jobs:
 
       - name: Save .NET CLI arguments to a file
         run: |
-          # Create a file (args.txt) and save all arguments to it
+          # Create the args.txt file with the build arguments
           echo "--configuration Release" > args.txt
           echo "-p:Custom=${{ env.CUSTOM }}" >> args.txt
           echo "-p:Arguments=${{ env.ARGUMENTS }}" >> args.txt
@@ -63,10 +63,14 @@ jobs:
           # Print out the content of args.txt for debugging
           cat args.txt
 
-      - name: Build the project using arguments file
+      - name: Read arguments from args.txt and pass them to dotnet build
+        shell: pwsh
         run: |
-          # Use the @ symbol to pass arguments from args.txt to dotnet build
-          dotnet build MyDotnetApp.sln @args.txt
+          # Read arguments from args.txt into an array
+          $args = Get-Content -Path args.txt | ForEach-Object { $_.Trim() }
+
+          # Use the arguments for dotnet build command
+          dotnet build MyDotnetApp.sln @args  # Pass arguments as splatted array
 
       - name: Run the application
         run: dotnet run --project MyDotnetApp\MyDotnetApp.csproj
