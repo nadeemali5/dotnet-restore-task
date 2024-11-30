@@ -50,25 +50,24 @@ jobs:
           echo "FEED_RESTORE = ${{ env.FEED_RESTORE }}"
           echo "INCLUDE_NUGET_ORG = ${{ env.INCLUDE_NUGET_ORG }}"
 
-      - name: Save .NET CLI arguments to a file
+      - name: Build the project using properties
         run: |
-          # Create a file to save the arguments
-          echo "--configuration Release" > args.txt
-          echo "-p:Custom=${{ env.CUSTOM }}" >> args.txt
-          echo "-p:Arguments=${{ env.ARGUMENTS }}" >> args.txt
-          echo "-p:ModifyOutputPath=${{ env.MODIFY_OUTPUT_PATH }}" >> args.txt
-          echo "-p:SelectOrConfig=${{ env.SELECT_OR_CONFIG }}" >> args.txt
-          echo "-p:FeedRestore=${{ env.FEED_RESTORE }}" >> args.txt
-          echo "-p:IncludeNuGetOrg=${{ env.INCLUDE_NUGET_ORG }}" >> args.txt
-          cat args.txt  # Optional: print the arguments to verify the content of the file
+          # Ensure no empty values are passed to dotnet build
+          if ($env:CUSTOM -ne "") { $customArg = "-p:Custom=$env:CUSTOM" } else { $customArg = "" }
+          if ($env:ARGUMENTS -ne "") { $argumentsArg = "-p:Arguments=$env:ARGUMENTS" } else { $argumentsArg = "" }
+          if ($env:MODIFY_OUTPUT_PATH -ne "") { $modifyOutputPathArg = "-p:ModifyOutputPath=$env:MODIFY_OUTPUT_PATH" } else { $modifyOutputPathArg = "" }
+          if ($env:SELECT_OR_CONFIG -ne "") { $selectOrConfigArg = "-p:SelectOrConfig=$env:SELECT_OR_CONFIG" } else { $selectOrConfigArg = "" }
+          if ($env:FEED_RESTORE -ne "") { $feedRestoreArg = "-p:FeedRestore=$env:FEED_RESTORE" } else { $feedRestoreArg = "" }
+          if ($env:INCLUDE_NUGET_ORG -ne "") { $includeNuGetOrgArg = "-p:IncludeNuGetOrg=$env:INCLUDE_NUGET_ORG" } else { $includeNuGetOrgArg = "" }
 
-      - name: Build the project using arguments file
-        run: |
-          # Read arguments from args.txt and pass them to dotnet build
-          $args = Get-Content -Path args.txt | ForEach-Object { $_.Trim() }  # Ensure no extra spaces
-          
-          # Use the arguments for dotnet build
-          dotnet build MyDotnetApp.sln $args
+          # Run the dotnet build command with the properly formatted properties
+          dotnet build MyDotnetApp.sln --configuration Release `
+            $customArg `
+            $argumentsArg `
+            $modifyOutputPathArg `
+            $selectOrConfigArg `
+            $feedRestoreArg `
+            $includeNuGetOrgArg
 
       - name: Run the application
         run: dotnet run --project MyDotnetApp\MyDotnetApp.csproj
