@@ -27,18 +27,14 @@ jobs:
         with:
           dotnet-version: '6.0'
 
-      # List .NET SDKs installed to confirm .NET 6.0 is present
-      - name: Check .NET SDK versions
-        run: |
-          ls "C:\Program Files\dotnet\"
-
-      # Ensure that the correct version of .NET is being used
+      # Verify that .NET 6.0 SDK is being used
       - name: Verify .NET version
         run: |
           dotnet --version
 
+      # List directory contents to confirm structure
       - name: List directory contents
-        run: dir  # Verify directory structure
+        run: dir
 
       - name: Read configuration from JSON file (PowerShell)
         id: read_config
@@ -78,6 +74,7 @@ jobs:
           # Output args.txt contents for debugging
           cat args.txt
 
+      # Read arguments from args.txt and pass them to dotnet build
       - name: Read arguments from args.txt and pass them to dotnet build
         shell: pwsh
         run: |
@@ -87,8 +84,8 @@ jobs:
           # Ensure there are no empty arguments
           $args = $args | Where-Object { $_ -ne "" }
 
-          # Use the arguments for dotnet build command
-          dotnet build MyDotnetApp.sln @args  # Pass arguments as splatted array
+          # Run dotnet build with arguments from args.txt, without extra switches
+          dotnet build MyDotnetApp.sln @args --no-dependencies --no-restore
 
       - name: Run the application
         run: dotnet run --project MyDotnetApp\MyDotnetApp.csproj
