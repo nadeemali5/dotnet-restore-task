@@ -23,16 +23,13 @@ jobs:
 
       - name: Ensure .NET 6.0 is in the PATH and DOTNET_ROOT is set
         run: |
-          # Set the DOTNET_ROOT environment variable to .NET 6.0 path
+          # Directly set DOTNET_ROOT to .NET 6.0 path
           $env:DOTNET_ROOT = "C:\Program Files\dotnet"
-
-          # Correct way to update PATH by removing any existing .NET paths
-          $env:PATH = [System.String]::Join(";", ($env:PATH -split ";") | Where-Object { $_ -ne "C:\Program Files\dotnet" })
-
-          # Now add the .NET 6.0 SDK path at the beginning of PATH
+          
+          # Set PATH so that .NET 6.0 is used (ensure no conflicts with higher versions)
           $env:PATH = "C:\Program Files\dotnet;" + $env:PATH
 
-          # Print the updated PATH for debugging purposes
+          # Print the updated PATH for debugging
           Write-Host "Updated PATH: $env:PATH"
 
           # Verify the SDKs installed and the current .NET version
