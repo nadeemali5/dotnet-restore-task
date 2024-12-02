@@ -21,12 +21,19 @@ jobs:
         with:
           dotnet-version: '6.0'
 
-      - name: Verify .NET SDK version (Ensure 6.0 is used)
+      - name: Ensure .NET 6.0 is in the PATH and DOTNET_ROOT is set
         run: |
-          # Verify which SDKs are installed to ensure .NET 6.0 is in the list
-          dotnet --list-sdks
+          # Explicitly set the DOTNET_ROOT environment variable to the path where .NET 6.0 is installed
+          $env:DOTNET_ROOT = "C:\Program Files\dotnet"
 
-          # Print the current .NET version being used
+          # Update PATH to prioritize .NET 6.0 SDK
+          $env:PATH = "C:\Program Files\dotnet\$env:PATH"
+
+          # Print the PATH to verify it is correctly updated
+          Write-Host "Updated PATH: $env:PATH"
+
+          # Verify which SDKs are available and check the .NET version being used
+          dotnet --list-sdks
           dotnet --version
 
       - name: List directory contents
