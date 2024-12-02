@@ -16,12 +16,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Create a global.json file to specify .NET 6.0 SDK version explicitly
+      # Create global.json to specify .NET 6.0 SDK version explicitly
       - name: Create global.json to use .NET 6.0 SDK
         run: |
           echo '{ "sdk": { "version": "6.0.428", "rollForward": "disable" } }' > global.json
 
-      # Set up .NET SDK to ensure .NET 6.0 is being used
+      # Set up .NET SDK 6.0
       - name: Set up .NET SDK 6.0
         uses: actions/setup-dotnet@v3
         with:
@@ -56,24 +56,27 @@ jobs:
           echo "FEED_RESTORE=$($config.feedRestore)" >> $env:GITHUB_ENV
           echo "INCLUDE_NUGET_ORG=$($config.includeNuGetOrg)" >> $env:GITHUB_ENV
 
+      # Save .NET CLI arguments to a file, filtering out empty values
       - name: Save .NET CLI arguments to a file
         run: |
-          # Ensure all necessary values are provided, and no empty values are included
+          # Prepare the arguments for the build, ensuring no empty properties are passed
           $args = @(
             "--configuration Release"
-            "-p:Custom=${{ env.CUSTOM }}"
-            "-p:Arguments=${{ env.ARGUMENTS }}"
-            "-p:ModifyOutputPath=${{ env.MODIFY_OUTPUT_PATH }}"
-            "-p:SelectOrConfig=${{ env.SELECT_OR_CONFIG }}"
-            "-p:FeedRestore=${{ env.FEED_RESTORE }}"
-            "-p:IncludeNuGetOrg=${{ env.INCLUDE_NUGET_ORG }}"
           )
 
-          # Remove empty values from args
-          $args = $args | Where-Object { $_ -ne "" }
+          # Add properties only if they are not empty
+          if ($env:CUSTOM) { $args += "-p:Custom=$($env:CUSTOM)" }
+          if ($env:ARGUMENTS) { $args += "-p:Arguments=$($env:ARGUMENTS)" }
+          if ($env:MODIFY_OUTPUT_PATH) { $args += "-p:ModifyOutputPath=$($env:MODIFY_OUTPUT_PATH)" }
+          if ($env:SELECT_OR_CONFIG) { $args += "-p:SelectOrConfig=$($env:SELECT_OR_CONFIG)" }
+          if ($env:FEED_RESTORE) { $args += "-p:FeedRestore=$($env:FEED_RESTORE)" }
+          if ($env:INCLUDE_NUGET_ORG) { $args += "-p:IncludeNuGetOrg=$($env:INCLUDE_NUGET_ORG)" }
 
-          # Save the arguments to args.txt
+          # Write the arguments to args.txt
           $args | Out-File -FilePath args.txt
+
+          # Output args.txt contents for debugging
+          cat args.txt
 
       - name: Read arguments from args.txt and pass them to dotnet build
         shell: pwsh
