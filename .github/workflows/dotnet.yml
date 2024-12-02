@@ -85,7 +85,11 @@ jobs:
           $args = $args | Where-Object { $_ -ne "" }
 
           # Run dotnet build with arguments from args.txt, without extra switches
-          dotnet build MyDotnetApp.sln @args --no-dependencies --no-restore
+          # We are explicitly calling MSBuild directly via dotnet build to ensure no additional switches are appended
+          $buildArgs = $args -join ' '  # Join the arguments into a single string
 
+          # Pass the arguments explicitly, without dotnet appending additional switches
+          dotnet msbuild MyDotnetApp.sln $buildArgs
+          
       - name: Run the application
         run: dotnet run --project MyDotnetApp\MyDotnetApp.csproj
