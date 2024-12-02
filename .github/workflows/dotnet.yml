@@ -88,13 +88,8 @@ jobs:
           # Construct the MSBuild command with only the required arguments
           $buildArgs = $args -join ' '  # Join the arguments into a single string
 
-          # Use dotnet msbuild directly, passing only the needed arguments
+          # Run the msbuild command directly without redundant flags
           dotnet msbuild MyDotnetApp.sln $buildArgs /nologo /maxcpucount:1 /verbosity:minimal
-          
-          # If necessary, you can remove or adjust the above switches
-          # /nologo       # Suppresses the MSBuild logo in output
-          # /maxcpucount  # Defines the maximum CPU count for parallelism, set to 1 for now
-          # /verbosity    # Sets verbosity level to minimal to reduce output
 
       - name: Run the application
         run: dotnet run --project MyDotnetApp\MyDotnetApp.csproj
