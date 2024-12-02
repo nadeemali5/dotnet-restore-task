@@ -89,7 +89,7 @@ jobs:
           $buildArgs = $args -join ' '  # Join the arguments into a single string
 
           # Run the msbuild command directly without redundant flags
-          dotnet msbuild MyDotnetApp.sln $buildArgs /nologo /maxcpucount:1 /verbosity:minimal
+          dotnet msbuild MyDotnetApp.sln $buildArgs
 
       - name: Run the application
         run: dotnet run --project MyDotnetApp\MyDotnetApp.csproj
