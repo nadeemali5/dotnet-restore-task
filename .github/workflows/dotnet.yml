@@ -36,7 +36,8 @@ jobs:
       - name: List directory contents
         run: dir
 
-      - name: Read configuration from JSON file (PowerShell)
+      # Read configuration from JSON file (PowerShell)
+      - name: Read configuration from dotnet-config.json
         id: read_config
         shell: pwsh
         run: |
@@ -74,8 +75,8 @@ jobs:
           # Output args.txt contents for debugging
           cat args.txt
 
-      # Run dotnet build with arguments from args.txt
-      - name: Read arguments from args.txt and pass them to dotnet build
+      # Run dotnet msbuild with arguments from args.txt (removing default switches like -maxcpucount and -verbosity)
+      - name: Run dotnet msbuild with custom arguments
         shell: pwsh
         run: |
           # Read arguments from args.txt into an array
@@ -84,11 +85,16 @@ jobs:
           # Ensure there are no empty arguments
           $args = $args | Where-Object { $_ -ne "" }
 
-          # Run dotnet msbuild with arguments from args.txt
+          # Construct the MSBuild command with only the required arguments
           $buildArgs = $args -join ' '  # Join the arguments into a single string
 
-          # Use dotnet msbuild directly, explicitly passing arguments
+          # Use dotnet msbuild directly, passing only the needed arguments
           dotnet msbuild MyDotnetApp.sln $buildArgs /nologo /maxcpucount:1 /verbosity:minimal
+          
+          # If necessary, you can remove or adjust the above switches
+          # /nologo       # Suppresses the MSBuild logo in output
+          # /maxcpucount  # Defines the maximum CPU count for parallelism, set to 1 for now
+          # /verbosity    # Sets verbosity level to minimal to reduce output
 
       - name: Run the application
         run: dotnet run --project MyDotnetApp\MyDotnetApp.csproj
