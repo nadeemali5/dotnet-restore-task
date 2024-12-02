@@ -88,8 +88,11 @@ jobs:
           # Construct the MSBuild command with only the required arguments
           $buildArgs = $args -join ' '  # Join the arguments into a single string
 
-          # Ensure no invalid or redundant flags are included (e.g., -maxcpucount or -verbosity:m)
-          # Directly specify /maxcpucount and /verbosity instead of passing them in args.txt
+          # Remove problematic flags if they are passed in args.txt (such as -maxcpucount, -verbosity:m)
+          $buildArgs = $buildArgs -replace "-maxcpucount", "/maxcpucount:1"
+          $buildArgs = $buildArgs -replace "-verbosity:m", "/verbosity:minimal"
+
+          # Run the MSBuild command
           dotnet msbuild MyDotnetApp.sln $buildArgs /nologo /maxcpucount:1 /verbosity:minimal
 
       - name: Run the application
