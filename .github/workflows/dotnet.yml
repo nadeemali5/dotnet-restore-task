@@ -74,7 +74,7 @@ jobs:
           # Output args.txt contents for debugging
           cat args.txt
 
-      # Read arguments from args.txt and pass them to dotnet build
+      # Run dotnet build with arguments from args.txt
       - name: Read arguments from args.txt and pass them to dotnet build
         shell: pwsh
         run: |
@@ -84,12 +84,11 @@ jobs:
           # Ensure there are no empty arguments
           $args = $args | Where-Object { $_ -ne "" }
 
-          # Run dotnet build with arguments from args.txt, without extra switches
-          # We are explicitly calling MSBuild directly via dotnet build to ensure no additional switches are appended
+          # Run dotnet msbuild with arguments from args.txt
           $buildArgs = $args -join ' '  # Join the arguments into a single string
 
-          # Pass the arguments explicitly, without dotnet appending additional switches
-          dotnet msbuild MyDotnetApp.sln $buildArgs
-          
+          # Use dotnet msbuild directly, explicitly passing arguments
+          dotnet msbuild MyDotnetApp.sln $buildArgs /nologo /maxcpucount:1 /verbosity:minimal
+
       - name: Run the application
         run: dotnet run --project MyDotnetApp\MyDotnetApp.csproj
