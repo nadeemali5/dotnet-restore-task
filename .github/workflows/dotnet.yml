@@ -75,7 +75,7 @@ jobs:
           # Output args.txt contents for debugging
           cat args.txt
 
-      # Run dotnet msbuild with arguments from args.txt (removing default switches like -maxcpucount and -verbosity)
+      # Run dotnet msbuild with custom arguments from args.txt (ensure no conflicting switches)
       - name: Run dotnet msbuild with custom arguments
         shell: pwsh
         run: |
