@@ -16,24 +16,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Create a global.json file to specify .NET 6.0 SDK version explicitly
+      - name: Create global.json to use .NET 6.0 SDK
+        run: |
+          echo '{ "sdk": { "version": "6.0.428", "rollForward": "disable" } }' > global.json
+
+      # Set up .NET SDK to ensure .NET 6.0 is being used
       - name: Set up .NET SDK 6.0
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '6.0'
 
-      - name: Ensure .NET 6.0 is in the PATH and DOTNET_ROOT is set
+      # List .NET SDKs installed to confirm .NET 6.0 is present
+      - name: Check .NET SDK versions
         run: |
-          # Directly set DOTNET_ROOT to .NET 6.0 path
-          $env:DOTNET_ROOT = "C:\Program Files\dotnet"
-          
-          # Set PATH so that .NET 6.0 is used (ensure no conflicts with higher versions)
-          $env:PATH = "C:\Program Files\dotnet;" + $env:PATH
+          ls "C:\Program Files\dotnet\"
 
-          # Print the updated PATH for debugging
-          Write-Host "Updated PATH: $env:PATH"
-
-          # Verify the SDKs installed and the current .NET version
-          dotnet --list-sdks
+      # Ensure that the correct version of .NET is being used
+      - name: Verify .NET version
+        run: |
           dotnet --version
 
       - name: List directory contents
