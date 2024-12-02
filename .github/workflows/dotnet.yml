@@ -89,6 +89,7 @@ jobs:
           $buildArgs = $args -join ' '  # Join the arguments into a single string
 
           # Ensure no invalid or redundant flags are included (e.g., -maxcpucount or -verbosity:m)
+          # Directly specify /maxcpucount and /verbosity instead of passing them in args.txt
           dotnet msbuild MyDotnetApp.sln $buildArgs /nologo /maxcpucount:1 /verbosity:minimal
 
       - name: Run the application
