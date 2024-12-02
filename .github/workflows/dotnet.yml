@@ -21,9 +21,12 @@ jobs:
         with:
           dotnet-version: '6.0'
 
-      - name: Verify .NET version
+      - name: Verify .NET SDK version (Ensure 6.0 is used)
         run: |
-          # Verify the .NET SDK version to ensure that 6.0 is being used
+          # Explicitly set the DOTNET_ROOT environment variable to the path where .NET 6.0 is installed
+          echo "DOTNET_ROOT=C:\Program Files\dotnet" >> $env:GITHUB_ENV
+
+          # Now check the .NET SDK version to confirm 6.0 is being used
           dotnet --version
 
       - name: List directory contents
