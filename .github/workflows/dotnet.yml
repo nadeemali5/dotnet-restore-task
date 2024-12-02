@@ -1,4 +1,4 @@
-name: .NET CI/CD.
+name: .NET CI/CD
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
           dotnet-version: '6.0'
 
       - name: List directory contents
-        run: dir  # This helps you verify the directory structure
+        run: dir  # Verify directory structure
 
       - name: Read configuration from JSON file (PowerShell)
         id: read_config
@@ -31,7 +31,7 @@ jobs:
           # Read the JSON config file
           $config = Get-Content -Raw -Path "dotnet-config.json" | ConvertFrom-Json
 
-          # Set the values as environment variables for the entire job (using GITHUB_ENV)
+          # Set values as environment variables
           echo "CUSTOM=$($config.custom)" >> $env:GITHUB_ENV
           echo "ARGUMENTS=$($config.arguments)" >> $env:GITHUB_ENV
           echo "TEST_RUN_TITLE=$($config.testRunTitle)" >> $env:GITHUB_ENV
@@ -40,27 +40,26 @@ jobs:
           echo "FEED_RESTORE=$($config.feedRestore)" >> $env:GITHUB_ENV
           echo "INCLUDE_NUGET_ORG=$($config.includeNuGetOrg)" >> $env:GITHUB_ENV
 
-      - name: Print environment variables
-        run: |
-          echo "CUSTOM = ${{ env.CUSTOM }}"
-          echo "ARGUMENTS = ${{ env.ARGUMENTS }}"
-          echo "TEST_RUN_TITLE = ${{ env.TEST_RUN_TITLE }}"
-          echo "MODIFY_OUTPUT_PATH = ${{ env.MODIFY_OUTPUT_PATH }}"
-          echo "SELECT_OR_CONFIG = ${{ env.SELECT_OR_CONFIG }}"
-          echo "FEED_RESTORE = ${{ env.FEED_RESTORE }}"
-          echo "INCLUDE_NUGET_ORG = ${{ env.INCLUDE_NUGET_ORG }}"
-
       - name: Save .NET CLI arguments to a file
         run: |
-          # Create the args.txt file with the build arguments
-          echo "--configuration Release" > args.txt
-          echo "-p:Custom=${{ env.CUSTOM }}" >> args.txt
-          echo "-p:Arguments=${{ env.ARGUMENTS }}" >> args.txt
-          echo "-p:ModifyOutputPath=${{ env.MODIFY_OUTPUT_PATH }}" >> args.txt
-          echo "-p:SelectOrConfig=${{ env.SELECT_OR_CONFIG }}" >> args.txt
-          echo "-p:FeedRestore=${{ env.FEED_RESTORE }}" >> args.txt
-          echo "-p:IncludeNuGetOrg=${{ env.INCLUDE_NUGET_ORG }}" >> args.txt
-          # Print out the content of args.txt for debugging
+          # Ensure all necessary values are provided, and no empty values are included
+          $args = @(
+            "--configuration Release"
+            "-p:Custom=${{ env.CUSTOM }}"
+            "-p:Arguments=${{ env.ARGUMENTS }}"
+            "-p:ModifyOutputPath=${{ env.MODIFY_OUTPUT_PATH }}"
+            "-p:SelectOrConfig=${{ env.SELECT_OR_CONFIG }}"
+            "-p:FeedRestore=${{ env.FEED_RESTORE }}"
+            "-p:IncludeNuGetOrg=${{ env.INCLUDE_NUGET_ORG }}"
+          )
+
+          # Remove empty values from args
+          $args = $args | Where-Object { $_ -ne "" }
+
+          # Save the arguments to args.txt
+          $args | Out-File -FilePath args.txt
+
+          # Debug output to verify the arguments are correct (optional)
           cat args.txt
 
       - name: Read arguments from args.txt and pass them to dotnet build
@@ -68,6 +67,9 @@ jobs:
         run: |
           # Read arguments from args.txt into an array
           $args = Get-Content -Path args.txt | ForEach-Object { $_.Trim() }
+
+          # Ensure there are no empty arguments
+          $args = $args | Where-Object { $_ -ne "" }
 
           # Use the arguments for dotnet build command
           dotnet build MyDotnetApp.sln @args  # Pass arguments as splatted array
