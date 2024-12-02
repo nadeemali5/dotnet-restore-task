@@ -23,15 +23,10 @@ jobs:
 
       - name: Verify .NET SDK version (Ensure 6.0 is used)
         run: |
-          # Unset any DOTNET_ROOT that may have been set earlier
-          echo "Unsetting DOTNET_ROOT to avoid conflicts"
-          Remove-Item -Force Env:DOTNET_ROOT
+          # Verify which SDKs are installed to ensure .NET 6.0 is in the list
+          dotnet --list-sdks
 
-          # Force use of .NET 6.0 by clearing PATH and setting it to the correct installation path
-          echo "Setting DOTNET_ROOT to .NET 6.0 path"
-          $env:DOTNET_ROOT = "C:\Program Files\dotnet"
-
-          # Confirm that the correct .NET version is being used
+          # Print the current .NET version being used
           dotnet --version
 
       - name: List directory contents
